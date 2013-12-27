@@ -1,4 +1,4 @@
-var fairSlicer = require('../lib/fairSlicer');
+var fairSlicer = require('../lib/fair-slicer');
 var _ = require('underscore');
 
 exports.testBasic = function(test) {

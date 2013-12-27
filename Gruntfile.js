@@ -10,9 +10,8 @@ module.exports = function (grunt) {
     concat: {
       build: {
         src: [
-          'lib/hsvToRgb.js',
-          'lib/fair-slicer.js',
-          'lib/color-slicer.js'
+          'lib/*.js',
+          'color-slicer.js',
         ],
         dest: 'dist/color-slicer.js'
       }

@@ -15,7 +15,7 @@ Usage
 -----
 
 ```
-var colorSlicer = require('lib/color-slicer');
+var colorSlicer = require('color-slicer');
 var count = myObjects.length;
 var startHue = 180;
 var colors = colorSlicer.getColors(count, startHue);

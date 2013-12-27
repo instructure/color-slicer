@@ -1,4 +1,4 @@
-var colorSlicer = require('../lib/colorSlicer');
+var colorSlicer = require('../color-slicer');
 
 exports.testBasic = function(test) {
   colors = colorSlicer.getColors(6);
