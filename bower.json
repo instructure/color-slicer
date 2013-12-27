@@ -1,6 +1,6 @@
 {
   "name": "color-slicer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "authors": [
     "Braden Anderson <bluej100@gmail.com>"
   ],
@@ -13,6 +13,11 @@
     "bower_components",
     "test",
     "tests"
+  ],
+  "keywords": [
+    "colors",
+    "font",
+    "thomson"
   ],
   "devDependencies": {
   }

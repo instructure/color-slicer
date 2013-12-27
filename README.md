@@ -9,7 +9,7 @@ Installation
 
 `bower install color-slicer`
 
-Or just download [https://raw.github.com/instructure/color-slicer/master/dist/color-slicer.js](dist/color-slicer.js).
+Or just download [dist/color-slicer.js](https://raw.github.com/instructure/color-slicer/master/dist/color-slicer.js).
 
 Usage
 -----
@@ -21,7 +21,7 @@ var startHue = 180;
 var colors = colorSlicer.getColors(count, startHue);
 ```
 
-See [https://github.com/instructure/color-slicer/blob/master/dist/example.html](dist/example.html).
+See [dist/example.html](https://github.com/instructure/color-slicer/blob/master/dist/example.html).
 
 Development
 -----------
