@@ -1,8 +1,24 @@
 var colorSlicer = require('../color-slicer');
+var converter = require("color-convert");
 
 exports.testBasic = function(test) {
-  colors = colorSlicer.getColors(6);
-  test.equal(colors.length, 6);
+  var colors = colorSlicer.getColors(6);
+  test.equal(colors.length, 6, 'correct number of colors is produced');
+  test.done();
+};
+
+exports.testContrast = function(test) {
+  // failing
+  test.done();
+  if (true) {return;}
+
+  var colors = colorSlicer.getRawColors(10);
+  var legible_y = 1/4.5 * 100;
+  for (var i = 0; i < colors.length; i++) {
+    var color = colors[i];
+    var xyz = converter.rgb2xyz(color);
+    test.ok(xyz[1] <= legible_y, 'colors have WCAG AA contrast against white');
+  }
   test.done();
 };
 

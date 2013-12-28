@@ -2,18 +2,18 @@ module.exports = function (grunt) {
   grunt.initConfig({
     watch: {
       build: {
-        files: ['lib/**/*.js'],
+        files: ['color-slicer.js', 'lib/*.js'],
         tasks: ['build']
       }
     },
 
-    concat: {
+    browserify: {
       build: {
-        src: [
-          'lib/*.js',
-          'color-slicer.js',
-        ],
-        dest: 'dist/color-slicer.js'
+        src: ['color-slicer.js'],
+        dest: 'dist/color-slicer.js',
+        options: {
+          standalone: 'colorSlicer'
+        }
       }
     },
 
@@ -31,10 +31,10 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
-  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('test', ['jshint', 'nodeunit']);
-  grunt.registerTask('build', ['concat']);
+  grunt.registerTask('build', ['browserify']);
   grunt.registerTask('default', ['build', 'watch']);
 };
