@@ -1,30 +1,24 @@
 !function(e){"object"==typeof exports?module.exports=e():"function"==typeof define&&define.amd?define(e):"undefined"!=typeof window?window.colorSlicer=e():"undefined"!=typeof global?global.colorSlicer=e():"undefined"!=typeof self&&(self.colorSlicer=e())}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// This uses fairSlicer to provide arbitrarily fine
+// divisions of the hue space. It uses the lab color
+// space to maintain legibility and distinctiveness.
+
+// x here is a hue angle in degrees
+
 var fairSlicer = require('./lib/fair-slicer');
 var converter = require("color-convert");
 
 module.exports = {
-  // vary from 95 saturation at red and cyan to 75 at green and violet
-  hueToSaturation: function(x) {
-    return 85 + Math.round(Math.cos((x-10) / 90 * Math.PI) * 10);
-  },
-
-  // This tries to give vivid reds, oranges, and blues,
-  // but deep cyans, greens, yellows, and purples.
-  // http://imgur.com/YTwrQR1
-  hueToBrightness: function(x) {
-    return 75 +
-      Math.round(Math.cos((x) / 60 * Math.PI) * 10) +
-      Math.round(Math.cos((x-20) / 90 * Math.PI) * 5) +
-      Math.round(Math.cos((x-30) / 180 * Math.PI) * 10);
-  },
-
-  hueToHSV: function(x) {
-    return [x, this.hueToSaturation(x), this.hueToBrightness(x)];
-  },
-
-  hueToRgb: function(x) {
-    var hsb = this.hueToHSV(x);
-    return converter.hsv2rgb(hsb[0], hsb[1], hsb[2]);
+  hueToRgb: function(h) {
+    h = h / 360 * 2 * Math.PI;
+    // legible lightness for small text on a white background
+    var l = 15;
+    // chroma
+    var c = 50;
+    var lab = [45, c * Math.cos(h), c * Math.sin(h)];
+    var xyz = converter.lab2xyz.apply(converter, lab);
+    var rgb = converter.xyz2rgb.apply(converter, xyz);
+    return rgb;
   },
 
   rgbToCss: function(rgb) {
@@ -33,7 +27,7 @@ module.exports = {
 
   getRawColors: function(limit, startX) {
     if (startX === undefined) {
-      startX = 270;
+      startX = 330;
     }
     var slices = fairSlicer(limit, 0, 360, startX);
     return slices.map(this.hueToRgb.bind(this));

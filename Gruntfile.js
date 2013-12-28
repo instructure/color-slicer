@@ -2,14 +2,14 @@ module.exports = function (grunt) {
   grunt.initConfig({
     watch: {
       build: {
-        files: ['color-slicer.js', 'lib/*.js'],
+        files: ['index.js', 'lib/*.js'],
         tasks: ['build']
       }
     },
 
     browserify: {
       build: {
-        src: ['color-slicer.js'],
+        src: ['index.js'],
         dest: 'dist/color-slicer.js',
         options: {
           standalone: 'colorSlicer'
