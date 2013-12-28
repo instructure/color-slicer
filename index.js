@@ -11,9 +11,9 @@ module.exports = {
   hueToRgb: function(h) {
     h = h / 360 * 2 * Math.PI;
     // legible lightness for small text on a white background
-    var l = 45;
+    var l = 40;
     // chroma
-    var c = 50;
+    var c = 80;
     var lab = [l, c * Math.cos(h), c * Math.sin(h)];
     var xyz = converter.lab2xyz.apply(converter, lab);
     var rgb = converter.xyz2rgb.apply(converter, xyz);
