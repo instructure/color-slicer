@@ -16,3 +16,13 @@ exports.testContrast = function(test) {
   }
   test.done();
 };
+
+exports.testBrightContrast = function(test) {
+  var colors = colorSlicer.getRawColors(10, undefined, {type: 'bright'});
+  for (var i = 0; i < colors.length; i++) {
+    var color = colors[i];
+    var xyz = converter.rgb2xyz(color);
+    test.ok((xyz[1]/100+0.05)/(0+0.05) >= 4.5, 'bright colors have WCAG AA contrast against black');
+  }
+  test.done();
+};
