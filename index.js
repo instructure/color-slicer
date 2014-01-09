@@ -8,18 +8,35 @@ var fairSlicer = require('./lib/fair-slicer');
 var converter = require("color-convert");
 
 module.exports = {
-  lchToLab: function(l, c, h) {
-    h = h / 360 * 2 * Math.PI;
+  lchToLab: function(lch) {
+    var l = lch[0];
+    var c = lch[1];
+    var h = lch[2] / 360 * 2 * Math.PI;
     return [l, c * Math.cos(h), c * Math.sin(h)];
   },
 
-  getLightnessAndChroma: function(type) {
-    if (type == 'bright') {
-      return {l: 72, c: 42};
+  hueToLch: function(options, h) {
+    var l, c;
+    if (options.l) {
+      l = options.l;
+      c = options.c;
+    } else if (options.bright) {
+      l = 73;
+      c = 42;
     } else {
-      // legible for small text on a white background
-      return {l: 50, c: 32};
+      l = 50;
+      c = 32;
+      // vary chroma to roughly match boundary of RGB-expressible colors
+      var delta = 18;
+      var most_constrained_hue = 210;
+      var hr = (h - most_constrained_hue) / 360 * 2 * Math.PI;
+      c += delta - Math.round(delta * Math.cos(hr));
     }
+    return [l, c, h]
+  },
+
+  lchToCss: function(lch) {
+    return this.rgbToCss(this.labToRgb(this.lchToLab(lch)));
   },
 
   labToRgb: function(lab) {
@@ -32,7 +49,7 @@ module.exports = {
     return "rgb("+rgb.join(',')+")";
   },
 
-  getLabColors: function(limit, startX, options) {
+  getLchColors: function(limit, startX, options) {
     if (startX === undefined) {
       startX = 330;
     }
@@ -40,15 +57,17 @@ module.exports = {
       options = {};
     }
 
-    if (!options.l) {
-      options = this.getLightnessAndChroma(options.type);
-    }
-    var hueToLab = function(h) {
-      return this.lchToLab(options.l, options.c, h);
+    var hueToLch = function(h) {
+      return this.hueToLch(options, h);
     }.bind(this);
 
     var slices = fairSlicer(limit, 0, 360, startX);
-    return slices.map(hueToLab);
+    return slices.map(hueToLch);
+  },
+
+  getLabColors: function(limit, startX, options) {
+    var lchColors = this.getLchColors(limit, startX, options);
+    return lchColors.map(this.lchToLab);
   },
 
   getRgbColors: function(limit, startX, options) {
