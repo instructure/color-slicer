@@ -8,7 +8,7 @@ exports.testBasic = function(test) {
 };
 
 exports.testContrast = function(test) {
-  var colors = colorSlicer.getRawColors(10);
+  var colors = colorSlicer.getRgbColors(10);
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
@@ -18,11 +18,39 @@ exports.testContrast = function(test) {
 };
 
 exports.testBrightContrast = function(test) {
-  var colors = colorSlicer.getRawColors(10, undefined, {type: 'bright'});
+  var colors = colorSlicer.getRgbColors(10, undefined, {type: 'bright'});
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
     test.ok((xyz[1]/100+0.05)/(0+0.05) >= 4.5, 'bright colors have WCAG AA contrast against black');
+  }
+  test.done();
+};
+
+exports.testExpressible = function(test) {
+  var colors = colorSlicer.getLabColors(10);
+  for (var i = 0; i < colors.length; i++) {
+    var lab = colors[i];
+    var xyz = converter.lab2xyz(lab);
+    var rgb = converter.xyz2rgb(xyz);
+    var xyz2 = converter.rgb2xyz(rgb);
+    for (var j = 0; j < 3; j++) {
+      test.ok(xyz[j] == xyz2[j], 'colors are expressible in RGB');
+    }
+  }
+  test.done();
+};
+
+exports.testBrightExpressible = function(test) {
+  var colors = colorSlicer.getLabColors(10, undefined, {type: 'bright'});
+  for (var i = 0; i < colors.length; i++) {
+    var lab = colors[i];
+    var xyz = converter.lab2xyz(lab);
+    var rgb = converter.xyz2rgb(xyz);
+    var xyz2 = converter.rgb2xyz(rgb);
+    for (var j = 0; j < 3; j++) {
+      test.ok(xyz[j] == xyz2[j], 'bright colors are expressible in RGB');
+    }
   }
   test.done();
 };

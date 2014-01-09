@@ -2,36 +2,65 @@
 <html>
 <head>
 <title>color-slicer example</title>
+<style>
+  li {
+    margin-top: 0.5em;
+  }
+  span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+  }
+</style>
 <script src="color-slicer.js"></script>
 <script>
-var generate =  function(e) {
-  if (e) {e.preventDefault();}
+var generate = function() {
   var count = parseInt(document.getElementById('count').value, 10);
   var start = parseInt(document.getElementById('start').value, 10);
-  var colors = colorSlicer.getColors(count, start);
+  var lightness = parseInt(document.getElementById('lightness').value, 10);
+  var chroma = parseInt(document.getElementById('chroma').value, 10);
+  var dark = document.getElementById('dark').checked;
+
+  document.body.style.color = dark ? '#fff' : '#000';
+  document.body.style.backgroundColor = dark ? '#000' : '#fff';
+
+  var colors = colorSlicer.getColors(count, start, {l: lightness, c: chroma, type: dark ? 'bright' : null});
   var output = document.getElementById('output');
   output.innerHTML = '';
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
-    var node = document.createElement('p');
+    var node = document.createElement('li');
     node.style.color = color;
-    node.appendChild(document.createTextNode(i+1+': '+color));
+    var blob = document.createElement('span');
+    blob.style.backgroundColor = color;
+    node.appendChild(blob);
+    node.appendChild(document.createTextNode(' '+color));
     output.appendChild(node);
   }
 };
 window.addEventListener('load', function() {
+  inputs = document.querySelectorAll('input');
+  for (var i = 0; i < inputs.length; i++) {
+    var input = inputs[i];
+    input.addEventListener('click', generate);
+    input.addEventListener('input', generate);
+  }
   generate();
-  document.getElementById('params').addEventListener('submit', generate);
 });
 </script>
 </head>
 <body>
-<form id="params" action="#">
+<form action="#">
   <fieldset>
-    <label>Count <input id="count" value="5" /></label> <label>Start <input id="start" value="330" /></label> <input type="submit" value="Generate" />
+    <div><label>Count <input id="count" value="10" /></label></div>
+    <div><label>Start <input id="start" value="330" /></label></div>
+    <div><label>Lightness <input id="lightness" /></label></div>
+    <div><label>Chroma <input id="chroma" /></label></div>
+    <div><label><input id="dark" type="checkbox" /> Dark</label></div>
   </fieldset>
 </form>
-<div id="output">
-</div>
+<ol id="output">
+</ol>
 </body>
 </html>
