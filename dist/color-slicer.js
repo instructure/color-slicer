@@ -16,7 +16,7 @@ module.exports = {
 
   getLightnessAndChroma: function(type) {
     if (type == 'bright') {
-      return {l: 85, c: 48};
+      return {l: 73, c: 42};
     } else {
       // legible for small text on a white background
       return {l: 50, c: 32};

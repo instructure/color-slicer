@@ -33,9 +33,13 @@ exports.testExpressible = function(test) {
     var lab = colors[i];
     var xyz = converter.lab2xyz(lab);
     var rgb = converter.xyz2rgb(xyz);
+    var j;
+    for (j = 0; j < 3; j++) {
+      test.ok(rgb[j] >= 0, 'colors are expressible in RGB');
+    }
     var xyz2 = converter.rgb2xyz(rgb);
-    for (var j = 0; j < 3; j++) {
-      test.ok(xyz[j] == xyz2[j], 'colors are expressible in RGB');
+    for (j = 0; j < 3; j++) {
+      test.ok(xyz[j] == xyz2[j], 'colors are accurately expressible in RGB');
     }
   }
   test.done();
@@ -47,9 +51,13 @@ exports.testBrightExpressible = function(test) {
     var lab = colors[i];
     var xyz = converter.lab2xyz(lab);
     var rgb = converter.xyz2rgb(xyz);
+    var j;
+    for (j = 0; j < 3; j++) {
+      test.ok(rgb[j] < 256, 'bright colors are expressible in RGB');
+    }
     var xyz2 = converter.rgb2xyz(rgb);
-    for (var j = 0; j < 3; j++) {
-      test.ok(xyz[j] == xyz2[j], 'bright colors are expressible in RGB');
+    for (j = 0; j < 3; j++) {
+      test.ok(xyz[j] == xyz2[j], 'bright colors are accurately expressible in RGB');
     }
   }
   test.done();
