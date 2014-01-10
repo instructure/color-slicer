@@ -26,9 +26,9 @@ module.exports = {
       c = 42;
     } else {
       l = 50;
-      c = 32;
+      c = 30;
       // vary chroma to roughly match boundary of RGB-expressible colors
-      var delta = 18;
+      var delta = 22;
       var most_constrained_hue = 210;
       var hr = (h - most_constrained_hue) / 360 * 2 * Math.PI;
       c += delta - Math.round(delta * Math.cos(hr));

@@ -18,7 +18,7 @@ exports.testContrast = function(test) {
 };
 
 exports.testBrightContrast = function(test) {
-  var colors = colorSlicer.getRgbColors(10, undefined, {type: 'bright'});
+  var colors = colorSlicer.getRgbColors(10, undefined, {bright: true});
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
@@ -46,7 +46,7 @@ exports.testExpressible = function(test) {
 };
 
 exports.testBrightExpressible = function(test) {
-  var colors = colorSlicer.getLabColors(10, undefined, {type: 'bright'});
+  var colors = colorSlicer.getLabColors(10, undefined, {bright: true});
   for (var i = 0; i < colors.length; i++) {
     var lab = colors[i];
     var xyz = converter.lab2xyz(lab);
