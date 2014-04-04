@@ -31,9 +31,18 @@ exports.testSpacing = function(test) {
     var slices = fairSlicer(count);
     slices.sort(cmp);
     var gaps = _.map(_.zip(_.rest(slices), _.initial(slices)), diff);
-    min = Math.min.apply(null, gaps);
-    max = Math.max.apply(null, gaps);
+    var min = Math.min.apply(null, gaps);
+    var max = Math.max.apply(null, gaps);
     test.ok(max / min <= 2, 'correct spacing');
   }
+  test.done();
+};
+
+exports.testNeighborSpacing = function(test) {
+  var slices = fairSlicer(100);
+  var abs_diff = function(x) {return Math.abs(x[0] - x[1]);};
+  var gaps = _.map(_.zip(_.rest(slices), _.initial(slices)), abs_diff);
+  var min = Math.min.apply(null, gaps);
+  test.ok(min > 0.2, 'correct neighbor spacing');
   test.done();
 };

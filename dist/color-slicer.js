@@ -103,27 +103,20 @@ module.exports = function(count, min, max, start) {
   }
   var width = max - min;
 
-  var step = 1;
-  var gapCount = 1;
-  var gapIdx = 0;
-  var pos = 0;
-  var slices = [];
-  for (i = _i = 0; 0 <= count ? _i < count : _i > count; i = 0 <= count ? ++_i : --_i) {
-    var cut = pos + step;
-    pos += step * 2;
-    gapIdx++;
-    if (gapIdx === gapCount) {
-      gapIdx = 0;
-      pos = 0;
-      step /= 2;
-      gapCount = 1 / step / 2;
-    }
-    cut = min + cut * width + start;
-    if (cut >= max) {
-      cut -= width;
-    }
-    slices.push(cut);
+  var slices = [min];
+  var build_adder = function(x) {return function(y) {return x + y;};};
+  while (slices.length < count) {
+      var shift = width / slices.length / 2;
+      var adder = build_adder(shift);
+      slices = slices.concat(slices.map(adder));
   }
+
+  slices = slices.slice(0, count);
+  slices = slices.map(function(slice) {
+    slice += start;
+    return slice > max ? slice - width : slice;
+  });
+
   return slices;
 };
 
