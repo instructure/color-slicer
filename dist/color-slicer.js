@@ -9,26 +9,21 @@ var fairSlicer = require('./lib/fair-slicer');
 var converter = require("color-convert");
 
 module.exports = {
-  lchToLab: function(lch) {
-    var l = lch[0];
-    var c = lch[1];
-    var h = lch[2] / 360 * 2 * Math.PI;
-    return [l, c * Math.cos(h), c * Math.sin(h)];
-  },
-
   hueToLch: function(options, h) {
+    h = Math.round(h);
     var l, c;
     if (options.l) {
       l = options.l;
       c = options.c;
     } else if (options.bright) {
-      l = 73;
-      c = 42;
+      l = 74;
+      c = 41;
     } else {
-      l = 50;
+      l = 49;
       c = 30;
+
       // vary chroma to roughly match boundary of RGB-expressible colors
-      var delta = 22;
+      var delta = 17;
       var most_constrained_hue = 210;
       var hr = (h - most_constrained_hue) / 360 * 2 * Math.PI;
       c += delta - Math.round(delta * Math.cos(hr));
@@ -36,18 +31,12 @@ module.exports = {
     return [l, c, h]
   },
 
+  lchToRgb: function(lch) {
+    return converter.lch2rgb.apply(converter, lch);
+  },
+
   lchToCss: function(lch) {
-    return this.rgbToCss(this.labToRgb(this.lchToLab(lch)));
-  },
-
-  labToRgb: function(lab) {
-    var xyz = converter.lab2xyz.apply(converter, lab);
-    var rgb = converter.xyz2rgb.apply(converter, xyz);
-    return rgb;
-  },
-
-  rgbToCss: function(rgb) {
-    return "rgb("+rgb.join(',')+")";
+    return "rgb("+this.lchToRgb(lch).join(',')+")";
   },
 
   getLchColors: function(limit, startX, options) {
@@ -66,19 +55,14 @@ module.exports = {
     return slices.map(hueToLch);
   },
 
-  getLabColors: function(limit, startX, options) {
-    var lchColors = this.getLchColors(limit, startX, options);
-    return lchColors.map(this.lchToLab);
-  },
-
   getRgbColors: function(limit, startX, options) {
-    var labColors = this.getLabColors(limit, startX, options);
-    return labColors.map(this.labToRgb);
+    var lchColors = this.getLchColors(limit, startX, options);
+    return lchColors.map(this.lchToRgb);
   },
 
   getColors: function(limit, startX, options) {
-    var rgbColors = this.getRgbColors(limit, startX, options);
-    return rgbColors.map(this.rgbToCss);
+    var lchColors = this.getLchColors(limit, startX, options);
+    return lchColors.map(this.lchToCss.bind(this));
   }
 };
 
@@ -130,6 +114,7 @@ module.exports = {
   rgb2keyword: rgb2keyword,
   rgb2xyz: rgb2xyz,
   rgb2lab: rgb2lab,
+  rgb2lch: rgb2lch,
 
   hsl2rgb: hsl2rgb,
   hsl2hsv: hsl2hsv,
@@ -155,8 +140,15 @@ module.exports = {
   
   xyz2rgb: xyz2rgb,
   xyz2lab: xyz2lab,
+  xyz2lch: xyz2lch,
   
   lab2xyz: lab2xyz,
+  lab2rgb: lab2rgb,
+  lab2lch: lab2lch,
+
+  lch2lab: lch2lab,
+  lch2xyz: lch2xyz,
+  lch2rgb: lch2rgb,
 }
 
 
@@ -284,6 +276,9 @@ function rgb2lab(rgb) {
   return [l, a, b];
 }
 
+function rgb2lch(args) {
+  return lab2lch(rgb2lab(args));
+}
 
 function hsl2rgb(hsl) {
   var h = hsl[0] / 360,
@@ -439,9 +434,9 @@ function xyz2rgb(xyz) {
   b = b > 0.0031308 ? ((1.055 * Math.pow(b, 1.0 / 2.4)) - 0.055)
     : b = (b * 12.92);
 
-  r = (r < 0) ? 0 : r;
-  g = (g < 0) ? 0 : g;
-  b = (b < 0) ? 0 : b;
+  r = Math.min(Math.max(0, r), 1);
+  g = Math.min(Math.max(0, g), 1);
+  b = Math.min(Math.max(0, b), 1);
 
   return [r * 255, g * 255, b * 255];
 }
@@ -467,6 +462,10 @@ function xyz2lab(xyz) {
   return [l, a, b];
 }
 
+function xyz2lch(args) {
+  return lab2lch(xyz2lab(args));
+}
+
 function lab2xyz(lab) {
   var l = lab[0],
       a = lab[1],
@@ -486,6 +485,45 @@ function lab2xyz(lab) {
   z = z / 108.883 <= 0.008859 ? z = (108.883 * (y2 - (b / 200) - (16 / 116))) / 7.787 : 108.883 * Math.pow(y2 - (b / 200), 3);
 
   return [x, y, z];
+}
+
+function lab2lch(lab) {
+  var l = lab[0],
+      a = lab[1],
+      b = lab[2],
+      hr, h, c;
+
+  hr = Math.atan2(b, a);
+  h = hr * 360 / 2 / Math.PI;
+  if (h < 0) {
+    h += 360;
+  }
+  c = Math.sqrt(a * a + b * b);
+  return [l, c, h];
+}
+
+function lab2rgb(args) {
+  return xyz2rgb(lab2xyz(args));
+}
+
+function lch2lab(lch) {
+  var l = lch[0],
+      c = lch[1],
+      h = lch[2],
+      a, b, hr;
+
+  hr = h / 360 * 2 * Math.PI;
+  a = c * Math.cos(hr);
+  b = c * Math.sin(hr);
+  return [l, a, b];
+}
+
+function lch2xyz(args) {
+  return lab2xyz(lch2lab(args));
+}
+
+function lch2rgb(args) {
+  return lab2rgb(lch2lab(args));
 }
 
 function keyword2rgb(keyword) {
@@ -694,15 +732,16 @@ for (var func in conversions) {
 
   convert[from][to] = convert[func] = (function(func) { 
     return function(arg) {
-      if (typeof arg == "number")
-        arg = Array.prototype.slice.call(arguments);
+      if (typeof arg == "number") {
+        arg = Array.prototype.slice.call(arguments);        
+      }
       
       var val = conversions[func](arg);
-      if (typeof val == "string" || val === undefined)
-        return val; // keyword
+      if (typeof val == "string" || val === undefined) {
+        return val; // keyword        
+      }
 
-      for (var i = 0; i < val.length; i++)
-        val[i] = Math.round(val[i]);
+      round(val)
       return val;
     }
   })(func);
@@ -711,7 +750,10 @@ for (var func in conversions) {
 
 /* Converter does lazy conversion and caching */
 var Converter = function() {
-   this.convs = {};
+   this.space = "rgb";
+   this.convs = {
+     'rgb': [0, 0, 0]
+   };
 };
 
 /* Either get the values for a space or
@@ -750,7 +792,16 @@ Converter.prototype.getValues = function(space) {
 
       this.convs[space] = vals;
    }
+   else {
+      round(vals);
+   }
   return vals;
+};
+
+function round(val) {
+  for (var i = 0; i < val.length; i++) {
+    val[i] = Math.round(val[i]);        
+  }
 };
 
 ["rgb", "hsl", "hsv", "cmyk", "keyword"].forEach(function(space) {

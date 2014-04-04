@@ -8,7 +8,7 @@ exports.testBasic = function(test) {
 };
 
 exports.testContrast = function(test) {
-  var colors = colorSlicer.getRgbColors(10);
+  var colors = colorSlicer.getRgbColors(30);
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
@@ -18,7 +18,7 @@ exports.testContrast = function(test) {
 };
 
 exports.testBrightContrast = function(test) {
-  var colors = colorSlicer.getRgbColors(10, undefined, {bright: true});
+  var colors = colorSlicer.getRgbColors(30, undefined, {bright: true});
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
@@ -28,36 +28,26 @@ exports.testBrightContrast = function(test) {
 };
 
 exports.testExpressible = function(test) {
-  var colors = colorSlicer.getLabColors(10);
+  var colors = colorSlicer.getLchColors(30);
   for (var i = 0; i < colors.length; i++) {
-    var lab = colors[i];
-    var xyz = converter.lab2xyz(lab);
-    var rgb = converter.xyz2rgb(xyz);
-    var j;
+    var lch = colors[i];
+    var rgb = converter.lch2rgb(lch);
+    var lch2 = converter.rgb2lch(rgb);
     for (j = 0; j < 3; j++) {
-      test.ok(rgb[j] >= 0, 'colors are expressible in RGB');
-    }
-    var xyz2 = converter.rgb2xyz(rgb);
-    for (j = 0; j < 3; j++) {
-      test.ok(xyz[j] == xyz2[j], 'colors are accurately expressible in RGB');
+      test.ok(Math.abs(lch[j] - lch2[j]) <= 1, 'colors are accurately expressible in RGB');
     }
   }
   test.done();
 };
 
 exports.testBrightExpressible = function(test) {
-  var colors = colorSlicer.getLabColors(10, undefined, {bright: true});
+  var colors = colorSlicer.getLchColors(30, undefined, {bright: true});
   for (var i = 0; i < colors.length; i++) {
-    var lab = colors[i];
-    var xyz = converter.lab2xyz(lab);
-    var rgb = converter.xyz2rgb(xyz);
-    var j;
+    var lch = colors[i];
+    var rgb = converter.lch2rgb(lch);
+    var lch2 = converter.rgb2lch(rgb);
     for (j = 0; j < 3; j++) {
-      test.ok(rgb[j] < 256, 'bright colors are expressible in RGB');
-    }
-    var xyz2 = converter.rgb2xyz(rgb);
-    for (j = 0; j < 3; j++) {
-      test.ok(xyz[j] == xyz2[j], 'bright colors are accurately expressible in RGB');
+      test.ok(Math.abs(lch[j] - lch2[j]) <= 1, 'bright colors are accurately expressible in RGB');
     }
   }
   test.done();
