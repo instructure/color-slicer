@@ -33,16 +33,33 @@ exports.testSpacing = function(test) {
     var gaps = _.map(_.zip(_.rest(slices), _.initial(slices)), diff);
     var min = Math.min.apply(null, gaps);
     var max = Math.max.apply(null, gaps);
-    test.ok(max / min <= 2, 'correct spacing');
+    test.ok(max / min <= 2.7, 'correct spacing');
   }
   test.done();
 };
 
 exports.testNeighborSpacing = function(test) {
   var slices = fairSlicer(100);
-  var abs_diff = function(x) {return Math.abs(x[0] - x[1]);};
-  var gaps = _.map(_.zip(_.rest(slices), _.initial(slices)), abs_diff);
-  var min = Math.min.apply(null, gaps);
-  test.ok(min > 0.2, 'correct neighbor spacing');
+  var neighborhood_size = 5;
+  var neighborhoods = _.initial(slices, 3).map(function(x, i) {
+    return slices.slice(i, i+neighborhood_size);
+  });
+  var build_diff = function(x) {return function(y) {return Math.abs(x - y);};};
+  var closest_gaps = neighborhoods.map(function(neighbors) {
+    var diff = build_diff(_.first(neighbors));
+    var gaps = _.rest(neighbors).map(diff);
+    var closest_gap = Math.min.apply(null, gaps);
+    return closest_gap;
+  });
+  var closest_gap = Math.min.apply(null, closest_gaps);
+  test.ok(closest_gap > 0.1, 'correct neighbor spacing');
+  test.done();
+};
+
+exports.testSpeed = function(test) {
+  var start = process.hrtime();
+  var slices = fairSlicer(500);
+  var time = process.hrtime(start)[1] / 1000;
+  test.ok(time < 100, 'reasonable speed');
   test.done();
 };

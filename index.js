@@ -19,7 +19,7 @@ module.exports = {
       c = 41;
     } else {
       l = 49;
-      c = 30;
+      c = 29;
 
       // vary chroma to roughly match boundary of RGB-expressible colors
       var delta = 17;

@@ -20,7 +20,7 @@ module.exports = {
       c = 41;
     } else {
       l = 49;
-      c = 30;
+      c = 29;
 
       // vary chroma to roughly match boundary of RGB-expressible colors
       var delta = 17;
@@ -67,13 +67,11 @@ module.exports = {
 };
 
 },{"./lib/fair-slicer":2,"color-convert":4}],2:[function(require,module,exports){
-// This divides a range iteratively, using progressively smaller binary
-// increments. A potential improvement here would be jumping around
-// within each pass, to avoid having a temporarily lopsided distribution,
-// but it's not too bad.
-//
-// I originally implemented this using the golden ratio, which gives nice
-// results for small numbers, but it's significantly worse at scale.
+// This divides a range iteratively using the golden ratio.
+// This method keeps gaps to similar size and ensures
+// that any small contiguous set is spaced apart.
+
+var PHI = (1+ Math.sqrt(5))/2;
 
 module.exports = function(count, min, max, start) {
   if (min === undefined) {
@@ -87,19 +85,14 @@ module.exports = function(count, min, max, start) {
   }
   var width = max - min;
 
-  var slices = [min];
-  var build_adder = function(x) {return function(y) {return x + y;};};
-  while (slices.length < count) {
-      var shift = width / slices.length / 2;
-      var adder = build_adder(shift);
-      slices = slices.concat(slices.map(adder));
+  var slices = [];
+  var slice = start;
+  var shift = width / PHI;
+  for (var i = 0; i < count; i++) {
+    slices.push(slice);
+    slice += shift;
+    if (slice > max) {slice -= width;}
   }
-
-  slices = slices.slice(0, count);
-  slices = slices.map(function(slice) {
-    slice += start;
-    return slice > max ? slice - width : slice;
-  });
 
   return slices;
 };

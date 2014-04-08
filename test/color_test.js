@@ -8,7 +8,7 @@ exports.testBasic = function(test) {
 };
 
 exports.testContrast = function(test) {
-  var colors = colorSlicer.getRgbColors(30);
+  var colors = colorSlicer.getRgbColors(100);
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
@@ -18,7 +18,7 @@ exports.testContrast = function(test) {
 };
 
 exports.testBrightContrast = function(test) {
-  var colors = colorSlicer.getRgbColors(30, undefined, {bright: true});
+  var colors = colorSlicer.getRgbColors(100, undefined, {bright: true});
   for (var i = 0; i < colors.length; i++) {
     var color = colors[i];
     var xyz = converter.rgb2xyz(color);
@@ -28,11 +28,13 @@ exports.testBrightContrast = function(test) {
 };
 
 exports.testExpressible = function(test) {
-  var colors = colorSlicer.getLchColors(30);
+  var colors = colorSlicer.getLchColors(100);
   for (var i = 0; i < colors.length; i++) {
     var lch = colors[i];
     var rgb = converter.lch2rgb(lch);
     var lch2 = converter.rgb2lch(rgb);
+    lch[2] %= 360;
+    lch2[2] %= 360;
     for (j = 0; j < 3; j++) {
       test.ok(Math.abs(lch[j] - lch2[j]) <= 1, 'colors are accurately expressible in RGB');
     }
@@ -41,11 +43,13 @@ exports.testExpressible = function(test) {
 };
 
 exports.testBrightExpressible = function(test) {
-  var colors = colorSlicer.getLchColors(30, undefined, {bright: true});
+  var colors = colorSlicer.getLchColors(100, undefined, {bright: true});
   for (var i = 0; i < colors.length; i++) {
     var lch = colors[i];
     var rgb = converter.lch2rgb(lch);
     var lch2 = converter.rgb2lch(rgb);
+    lch[2] %= 360;
+    lch2[2] %= 360;
     for (j = 0; j < 3; j++) {
       test.ok(Math.abs(lch[j] - lch2[j]) <= 1, 'bright colors are accurately expressible in RGB');
     }
