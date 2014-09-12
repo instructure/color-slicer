@@ -56,3 +56,18 @@ exports.testBrightExpressible = function(test) {
   }
   test.done();
 };
+
+exports.testUnsafeExpressible = function(test) {
+  var colors = colorSlicer.getLchColors(100, undefined, {unsafe: true});
+  for (var i = 0; i < colors.length; i++) {
+    var lch = colors[i];
+    var rgb = converter.lch2rgb(lch);
+    var lch2 = converter.rgb2lch(rgb);
+    lch[2] %= 360;
+    lch2[2] %= 360;
+    for (j = 0; j < 3; j++) {
+      test.ok(Math.abs(lch[j] - lch2[j]) <= 1, 'unsafe colors are accurately expressible in RGB');
+    }
+  }
+  test.done();
+};
