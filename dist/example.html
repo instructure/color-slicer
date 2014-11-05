@@ -15,6 +15,11 @@
 </style>
 <script src="color-slicer.js"></script>
 <script>
+var hex = function(int) {
+  var str = int.toString(16);
+  return "00".substring(0, 2 - str.length) + str;
+}
+
 var generate = function() {
   var count = parseInt(document.getElementById('count').value, 10);
   var start = parseInt(document.getElementById('start').value, 10);
@@ -32,12 +37,15 @@ var generate = function() {
   for (var i = 0; i < colors.length; i++) {
     var lch = colors[i];
     var color = colorSlicer.lchToCss(lch);
+    var rgb = colorSlicer.lchToRgb(lch);
+    var hexStr = "#"+hex(rgb[0])+hex(rgb[1])+hex(rgb[2]);
+
     var node = document.createElement('li');
     node.style.color = color;
     var blob = document.createElement('span');
     blob.style.backgroundColor = color;
     node.appendChild(blob);
-    node.appendChild(document.createTextNode(' lch('+lch.join(', ')+') = '+color));
+    node.appendChild(document.createTextNode(' lch('+lch.join(', ')+') = '+color+' = '+hexStr));
     output.appendChild(node);
   }
 };
